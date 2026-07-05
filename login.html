@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Utileria - Login</title>
+    <link rel="stylesheet" href="css/ejercicio9.css" />
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header__title">Login</h1>
+            <p class="header__subtitle">Inicia sesion</p>
+        </div> 
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <form id="loginForm" novalidate>
+
+
+                <div class="form-group">
+                    <label for="loginCorreo" class="form-label">Correo electronico</label>
+                    <input type="email" id="loginCorreo" class="form-input" placeholder="ejemplo@correo.cl" />
+                    <span class="form-error" id="loginCorreoError">Correo invalido.</span>
+                    <span class="form-ok" id="loginCorreoOk">Bien</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword" class="form-label">Contrasena</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="ingrese contrasena" />
+                    <span class="form-error" id="loginPasswordError">No cumple los requisitos.</span>
+                    <span class="form-ok" id="loginPasswordOk">Bien</span>
+                </div>
+                <button type="submit" class="btn btn--primary btn--block">Iniciar sesion</button>
+            </form>
+            <p style="margin-top: 1.5rem; text-align: center;">
+                <a href="index.html" class="footer__link">Volver al registro</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+        </div>
+    </footer>
+
+    <script src="js/utileria.js"></script>
+    <script>
+
+                // Cuando el documento ya cargo es lo que especifica la DOMcontentLoaded, empezamos o especificamos que podemos agarrar los elementos
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // obtenemos el elemento de formulario, y modal
+            // obtenemos los elementos de losbinputs
+
+            var form = document.getElementById('loginForm');
+            var correo = document.getElementById('loginCorreo');
+            var password = document.getElementById('loginPassword');
+            var correoError = document.getElementById('loginCorreoError');
+            var correoOk = document.getElementById('loginCorreoOk');
+            var passwordError = document.getElementById('loginPasswordError');
+            var passwordOk = document.getElementById('loginPasswordOk');
+            // Esta funcion pinta de verde o rojo un input segun si paso o no la validacion
+
+            function mostrarEstado(input, errorEl, okEl, esValido) {
+                if (esValido) {
+                                        //cambiamos desde caracteristicas de css para que se vea verde o rojo, y mostramos el mensaje de error o ok
+
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                    errorEl.style.display = 'none';
+                    okEl.style.display = 'inline';
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                    errorEl.style.display = 'block';
+                    okEl.style.display = 'none';
+                }
+            }
+            // Cuando el usuario sale del campo nombre que es lo que nos ayuda a confirmar blur, validamos el nombre, limpiamos espacios y validamos que solo sean letras y espacios
+
+            correo.addEventListener('blur', function () {
+                var esValido = validarCorreo(correo.value.trim());
+                mostrarEstado(correo, correoError, correoOk, esValido);
+            });
+            // Cuando el usuario sale del campo correo, validamos el correo que es lo que nos ayuda a confirmar blur, validamos el correo, limpiamos espacios y validamos que sea un correo valido
+
+            password.addEventListener('blur', function () { //con nuestra funcion validamos que sea una contrasena segura y permitida
+                var esValido = validarPassword(password.value);
+                mostrarEstado(password, passwordError, passwordOk, esValido);
+            });
+
+            form.addEventListener('submit', function (e) { //sucede cuando enviamos el formulario 
+                e.preventDefault();
+
+                var correoValido = validarCorreo(correo.value.trim());
+                var passwordValida = validarPassword(password.value);
+
+                mostrarEstado(correo, correoError, correoOk, correoValido);
+                mostrarEstado(password, passwordError, passwordOk, passwordValida);
+
+                if (correoValido && passwordValida) {
+                    // Cuando nuestras funciones validan correctamente tanto la consola como un alert basico de java nos lo notificaran
+                    console.log('Login exitoso (simulacion)');
+                    alert('Login exitoso (simulacion)');
+                } else {
+                    var primerError = document.querySelector('.is-invalid');
+                    if (primerError) {
+                        primerError.focus();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

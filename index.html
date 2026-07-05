@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chavez Hernandez Luis Eduardo</title>
+    <link rel="stylesheet" href="css/ejercicio9.css" />
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <p>Demostracion de la libreria Utileria.js</p>
+        </div>
+    </header>
+
+
+
+    <h2 class="form1__titulo">Registro de usuario</h2>
+
+    <form id="registroForm" novalidate>
+        <div class="form-group">
+            <label for="nombre" class="form-label">Nombre completo</label>
+            <input type="text" id="nombre" class="form-input" placeholder="Introducir nombre completo" />
+            <span class="form-error" id="nombreError">Solo letras y espacios.</span>
+            <span class="form-ok" id="nombreOk">Bien</span>
+        </div>
+
+        <!-- Correo -->
+
+
+        <div class="form-group">
+            <label for="correo" class="form-label">Correo electronico</label>
+            <input type="email" id="correo" class="form-input" placeholder="Introducir correo electronico" />
+            <span class="form-error" id="correoError">Correo invalido.</span>
+            <span class="form-ok" id="correoOk">Bien</span>
+        </div>
+
+        <!-- Telefono -->
+        <div class="form-group">
+            <label for="telefono" class="form-label">Telefono (10 digitos)</label>
+            <input type="tel" id="telefono" class="form-input" placeholder="Introducir num de telefono" />
+            <span class="form-error" id="telefonoError">Debe tener exactamente 9 digitos.</span>
+            <span class="form-ok" id="telefonoOk">Bien</span>
+        </div>
+
+        <!-- Fecha nacimiento -->
+        <div class="form-group">
+            <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+            <input type="date" id="fechaNacimiento" class="form-input" />
+            <span class="form-error" id="fechaError">Debes ser mayor de 18 anios.</span>
+            <span class="form-ok" id="fechaOk">Bien</span>
+        </div>
+
+        <!-- Contrasena con boton Generar -->
+        <div class="form-group">
+            <label for="password" class="form-label">Contrasena</label>
+            <div class="password-group">
+                <input type="text" id="password" class="form-input" placeholder="Minimo 8 caracteres" />
+                <button type="button" id="btnGenerarPassword" class="btn-generate">Generar contrasena</button>
+            </div>
+            <span class="form-error" id="passwordError">Debe tener mayuscula, minuscula, numero, especial y minimo 8
+                caracteres.</span>
+            <span class="form-ok" id="passwordOk">Bien</span>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">Registrarse</button>
+    </form>
+
+    <div class="modal" id="modalEdad">
+        <div class="modal__overlay" id="modalOverlay"></div>
+        <div class="modal__content">
+            <button class="modal__close" id="modalClose">&times;</button>
+            <div>
+                <h3 class="modal__title">Registro exitoso!</h3>
+                <p class="modal__text">
+                    Tu edad calculada es:
+                    <strong id="modalEdadValor">--</strong> anios.
+                </p>
+                <button class="btn btn--secondary" id="modalAceptar">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                <a href="login.html" class="footer__link">Ir a probar en Login</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/utileria.js"></script>
+    <script>
+        // Cuando el documento ya cargo es lo que especifica la DOMcontentLoaded, empezamos o especificamos que podemos agarrar los elementos
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // obtenemos el elemento de formulario, y modal
+            var form = document.getElementById('registroForm');
+            var modal = document.getElementById('modalEdad');
+            var modalEdadValor = document.getElementById('modalEdadValor');
+
+            // obtenemos los elementos de losbinputs
+            var nombre = document.getElementById('nombre');
+            var correo = document.getElementById('correo');
+            var telefono = document.getElementById('telefono');
+            var fechaNacimiento = document.getElementById('fechaNacimiento');
+            var password = document.getElementById('password');
+            var btnGenerar = document.getElementById('btnGenerarPassword');
+
+            // aqui usamos los elementos de error y ok para cada input que hicimos para poder visualmente generar una demostracion de funcionamiento
+            var nombreError = document.getElementById('nombreError');
+            var nombreOk = document.getElementById('nombreOk');
+            var correoError = document.getElementById('correoError');
+            var correoOk = document.getElementById('correoOk');
+            var telefonoError = document.getElementById('telefonoError');
+            var telefonoOk = document.getElementById('telefonoOk');
+            var fechaError = document.getElementById('fechaError');
+            var fechaOk = document.getElementById('fechaOk');
+            var passwordError = document.getElementById('passwordError');
+            var passwordOk = document.getElementById('passwordOk');
+
+            // Esta funcion pinta de verde o rojo un input segun si paso o no la validacion
+            function mostrarEstado(input, errorEl, okEl, esValido) {
+                if (esValido) { 
+                    //cambiamos desde caracteristicas de css para que se vea verde o rojo, y mostramos el mensaje de error o ok
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                    errorEl.style.display = 'none';
+                    okEl.style.display = 'inline';
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                    errorEl.style.display = 'block';
+                    okEl.style.display = 'none';
+                }
+            }
+
+            // Cuando el usuario sale del campo nombre que es lo que nos ayuda a confirmar blur, validamos el nombre, limpiamos espacios y validamos que solo sean letras y espacios
+            nombre.addEventListener('blur', function () {
+                nombre.value = limpiarEspacios(nombre.value); //ponemos en funcion limpiarEspacios para quitar espacios al inicio y final del nombre
+                var esValido = soloLetras(nombre.value);
+                mostrarEstado(nombre, nombreError, nombreOk, esValido);
+            });
+
+            // Cuando el usuario sale del campo correo, validamos el correo que es lo que nos ayuda a confirmar blur, validamos el correo, limpiamos espacios y validamos que sea un correo valido
+            correo.addEventListener('blur', function () {
+                var esValido = validarCorreo(correo.value.trim());
+                mostrarEstado(correo, correoError, correoOk, esValido);
+            });
+
+            // Cuando el usuario sale del campo telefono, validamos que sea solo numeros y que tenga exactamente 9 digitos utilizando nustra funcion validarLongitud
+            telefono.addEventListener('blur', function () {
+                var valor = telefono.value.replace(/\s/g, '');
+                var soloNumeros = /^[0-9]+$/.test(valor); // al tener que usar texto, usamos expresion regular para validar que solo sean numeros
+                var esValido = soloNumeros && validarLongitud(valor, 10) && valor.length === 10;
+                mostrarEstado(telefono, telefonoError, telefonoOk, esValido);
+            });
+
+            // Cuando el usuario sale del campo fecha, validamos que sea mayor de edad
+            fechaNacimiento.addEventListener('blur', function () { // con nuestra funcion de utileria de si EsmayorDeEdad
+                var esValido = false;
+                if (fechaNacimiento.value) {
+                    esValido = esMayorDeEdad(fechaNacimiento.value);
+                }
+                mostrarEstado(fechaNacimiento, fechaError, fechaOk, esValido);
+            });
+
+            // Cuando el usuario sale del campo password, validamos
+            password.addEventListener('blur', function () { //con nuestra funcion validamos que sea una contrasena segura y permitida
+                var esValido = validarPassword(password.value);
+                mostrarEstado(password, passwordError, passwordOk, esValido);
+            });
+                
+            // Boton para generar una contrasena segura automaticamente
+            btnGenerar.addEventListener('click', function () {       //este boton nos sirve para mandar a llamar nuestra funcion de crear una contrasena fuerte
+                var nuevaPassword = generarPasswordFuerte(12);
+                password.value = nuevaPassword;
+                // Disparamos el evento blur para que se pinte de verde automaticamente
+                password.dispatchEvent(new Event('blur'));
+            });
+
+            // Cuando se envia el formulario realizamos todas las validaciones y si todo paso, mostramos el modal con la edad calculada para finalizar la demostracion
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                nombre.value = limpiarEspacios(nombre.value);
+                correo.value = limpiarEspacios(correo.value);
+
+                var telefonoLimpio = telefono.value.replace(/\s/g, '');
+                var soloNumeros = /^[0-9]+$/.test(telefonoLimpio);
+
+                var nombreValido = soloLetras(nombre.value);
+                var correoValido = validarCorreo(correo.value.trim());
+                var telefonoValido = soloNumeros && validarLongitud(telefonoLimpio, 10) && telefonoLimpio.length === 10;
+                var passwordValida = validarPassword(password.value);
+
+                var fechaValida = false;
+                var edad = 0;
+                if (fechaNacimiento.value) {
+                    edad = calcularEdad(fechaNacimiento.value);
+                    fechaValida = esMayorDeEdad(fechaNacimiento.value);
+                }
+
+
+                mostrarEstado(nombre, nombreError, nombreOk, nombreValido);
+                mostrarEstado(correo, correoError, correoOk, correoValido);
+                mostrarEstado(telefono, telefonoError, telefonoOk, telefonoValido);
+                mostrarEstado(fechaNacimiento, fechaError, fechaOk, fechaValida);
+                mostrarEstado(password, passwordError, passwordOk, passwordValida);
+                // Si todo paso, mostramos el modal con la edad
+                if (nombreValido && correoValido && telefonoValido && fechaValida && passwordValida) {
+                    modalEdadValor.textContent = edad;
+                    modal.classList.add('is-open');
+                } else {
+                    // Si algo fallo, buscamos el primer campo con error y le hacemos focus
+                    var primerError = document.querySelector('.is-invalid');
+                    if (primerError) {
+                        primerError.focus();
+                    }
+                }
+            });
+
+            var modalClose = document.getElementById('modalClose');
+            var modalAceptar = document.getElementById('modalAceptar');
+            var modalOverlay = document.getElementById('modalOverlay');
+            function cerrarModal() {
+                modal.classList.remove('is-open');
+            }
+
+            modalClose.addEventListener('click', cerrarModal);
+            modalAceptar.addEventListener('click', cerrarModal);
+            modalOverlay.addEventListener('click', cerrarModal);
+        });
+    </script>
+</body>
+
+</html>
